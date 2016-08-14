@@ -1,6 +1,6 @@
-# Vimeo API Samples
+# Go Vimeo 
 
-This repository contains sample codes for [vimeo][0] APIs.
+Golang library for [vimeo][0] APIs.
 
 
 ## Prepared
