@@ -2,30 +2,23 @@ package vimeo
 
 import (
 	"testing"
-	"net/http"
 )
 
-func TestNewClient(t *testing.T) {
-	_, err := NewClient()
-	if err != nil {
-		t.Errorf("Can not create client object.\n%v", err)
+func TestSetToken(t *testing.T) {
+	expectToken := "test-token"
+	SetToken(expectToken)
+
+	if _token != expectToken {
+		t.Errorf("Token is invalid. expected token was %s", expectToken)
 	}
 }
 
-func TestGet(t *testing.T) {
-	c, err := NewClient()
-	if err != nil {
-		t.Errorf("Can not create client object.\n%v", err)
-	}
+func TestSetTokenFromEnv(t *testing.T) {
+}
 
-	resp, err := c.Get("/videos/1", nil)
-	if err != nil {
-		t.Errorf("Can not call `GET /`.\n%v", err)
-	}
-
-	expectCode := http.StatusNotFound
-	if resp.Code != expectCode {
-		t.Errorf("Unexpected code.\nThe expected code is %d but code is %d",
-			expectCode, resp.Code)
-	}
+func TestQuery(t *testing.T) {
+	// TODO: GET method
+	// TODO: POST method
+	// TODO: PUT method
+	// TODO: DELETE method
 }

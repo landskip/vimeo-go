@@ -1,20 +1,23 @@
 package vimeo
 
 import (
+	"encoding/json"
+	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
 var _token string
 var _url = "https://api.vimeo.com"
 
-// Vimeo API response
-type Response struct {
-	Code int
-	Body []byte
-}
+// Available APIs
+var (
+	Me = new(MeClient)
+)
 
 // Set access token
 func SetToken(token string) {
@@ -30,36 +33,40 @@ func SetTokenFromEnv() error {
 	return nil
 }
 
-// Post vimeo API
-func (c *Client) Post(path string, values url.Values) (Response, error) {
-	req, err := http.NewRequest("POST",
-		c.Config.BaseURL+path,
-		strings.NewReader(values.Encode()))
-
-	if err != nil {
-		return Response{}, err
+// Query for Vimeo APIs (supported GET, POST, PUT, DELET)
+func query(method, path string, values url.Values, v interface{}) error {
+	var body io.Reader
+	if method == "POST" || method == "PUT" {
+		body = strings.NewReader(values.Encode())
 	}
 
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", "Bearer "+c.Config.AccessToken)
+	req, err := http.NewRequest(method, _url+path, body)
+	if err != nil {
+		return err
+	}
 
-	return getDoResponseBody(http.Client{}, req)
-}
+	switch method {
+	case "GET", "DELETE":
+		if values != nil {
+			req.URL.RawQuery = values.Encode()
+		}
+	case "PUT", "POST":
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	}
+	req.Header.Add("Authorization", "Bearer "+_token)
 
-func getDoResponseBody(cli http.Client, req *http.Request) (Response, error) {
-	var result Response
+	cli := http.Client{}
 	resp, err := cli.Do(req)
 	if err != nil {
-		return result, err
+		return err
 	}
 	defer resp.Body.Close()
 
+	//TODO: check response code
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return result, err
+		return err
 	}
 
-	result.Body = b
-	result.Code = resp.StatusCode
-	return result, nil
+	return json.Unmarshal(b, v)
 }
