@@ -7,9 +7,11 @@ Golang library for [vimeo][0] APIs.
 
 1. Create your [new vimeo app][1].
 1. Generate an access token
-2. Run `cp config.toml.sample config.toml`
-3. Fix `config.toml`
+2. Set VIMEO_TOKEN in your environment
 
+## Test
+
+Run `go test` command.
 
 [0]: https://developer.vimeo.com/
 [1]: https://developer.vimeo.com/apps/new
