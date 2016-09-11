@@ -7,10 +7,8 @@ import (
 	"strings"
 )
 
-// Vimeo API client
-type Client struct {
-	Config Config
-}
+var _token string
+var _url = "https://api.vimeo.com"
 
 // Vimeo API response
 type Response struct {
@@ -18,30 +16,18 @@ type Response struct {
 	Body []byte
 }
 
-// Generate new VimeoClient object
-func NewClient() (Client, error) {
-	config, err := NewConfig()
-	if err != nil {
-		return Client{}, err
-	}
-	return Client{
-		Config: config,
-	}, nil
+// Set access token
+func SetToken(token string) {
+	_token = token
 }
 
-// Get vimeo API
-func (c *Client) Get(path string, values url.Values) (Response, error) {
-	req, err := http.NewRequest("GET",
-		c.Config.BaseURL+path, nil)
-
-	if err != nil {
-		return Response{}, err
+// Set VIMEO_TOKEN to token in environment
+func SetTokenFromEnv() error {
+	_token = os.Getenv("VIMEO_TOKEN")
+	if _token == "" {
+		return errors.New("VIMEO_TOKEN is not set.")
 	}
-
-	req.URL.RawQuery = values.Encode()
-	req.Header.Add("Authorization", "Bearer "+c.Config.AccessToken)
-
-	return getDoResponseBody(http.Client{}, req)
+	return nil
 }
 
 // Post vimeo API
