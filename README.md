@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/landskip/vimeo-go/tree/master.svg?style=shield)](https://circleci.com/gh/landskip/vimeo-go/tree/master)
+
 # Go Vimeo 
 
 Golang library for [vimeo][0] APIs.
