@@ -13,9 +13,14 @@ func TestSetToken(t *testing.T) {
 	}
 }
 
-func TestSetTokenFromEnv(t *testing.T) {
+func TestTokenFromEnv(t *testing.T)  {
+    err := SetTokenFromEnv()
+    if err != nil {
+        t.Errorf("Token can get from environment. Please set VIMEO_TOKEN.")
+    }
 }
 
+// TODO: mock
 func TestQuery(t *testing.T) {
 	// TODO: GET method
 	// TODO: POST method
