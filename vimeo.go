@@ -63,11 +63,14 @@ func query(method, path string, values url.Values, v interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	//TODO: check response code
+	code := resp.StatusCode
+	if code != 200 && code != 201 {
+		return errors.New(http.StatusText(code))
+	}
+
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-
 	return json.Unmarshal(b, v)
 }
