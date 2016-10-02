@@ -67,5 +67,9 @@ func query(method, path string, values url.Values, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(b, v)
+
+	if v != nil {
+		return json.Unmarshal(b, v)
+	}
+	return nil
 }
