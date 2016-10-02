@@ -1,2 +1,7 @@
 # Vimeo my API apps configuration
 config.toml
+
+# Gnu-Global tagas
+GPATH
+GRTAGS
+GTAGS
