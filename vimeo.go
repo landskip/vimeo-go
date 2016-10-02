@@ -33,10 +33,11 @@ func SetTokenFromEnv() error {
 	return nil
 }
 
-// Query for Vimeo APIs (supported GET, POST, PUT, DELET)
+// Query for Vimeo APIs (supported GET, POST, PATCH, DELET)
+// return ResponseCode, error
 func query(method, path string, values url.Values, v interface{}) error {
 	var body io.Reader
-	if method == "POST" || method == "PUT" {
+	if method == "POST" || method == "PATCH" || method == "PUT" {
 		body = strings.NewReader(values.Encode())
 	}
 
@@ -50,7 +51,7 @@ func query(method, path string, values url.Values, v interface{}) error {
 		if values != nil {
 			req.URL.RawQuery = values.Encode()
 		}
-	case "PUT", "POST":
+	case "PATCH", "POST", "PUT":
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	}
 	req.Header.Add("Authorization", "Bearer "+_token)
