@@ -1,109 +1,108 @@
 package vimeo
 
-import (
-	"net/url"
-	"strconv"
-)
-
-// Own client
-// https://developer.vimeo.com/api/endpoints/me#/ondemand/pages
-type MeClient struct{}
-
-// Me
-// TODO: add Metadata
-type User struct {
-	URI         string      `json:"uri"`
+// Response of [GET]/me
+type Me struct {
+	Account       string      `json:"account"`
+	Bio           interface{} `json:"bio"`
+	ContentFilter []string    `json:"content_filter"`
+	CreatedTime   string      `json:"created_time"`
+	Link          string      `json:"link"`
+	Location      interface{} `json:"location"`
+	Metadata      struct {
+		Connections struct {
+			Activities struct {
+				Options []string `json:"options"`
+				URI     string   `json:"uri"`
+			} `json:"activities"`
+			Albums struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"albums"`
+			Appearances struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"appearances"`
+			Categories struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"categories"`
+			Channels struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"channels"`
+			Feed struct {
+				Options []string `json:"options"`
+				URI     string   `json:"uri"`
+			} `json:"feed"`
+			Followers struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"followers"`
+			Following struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"following"`
+			Groups struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"groups"`
+			Likes struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"likes"`
+			ModeratedChannels struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"moderated_channels"`
+			Pictures struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"pictures"`
+			Portfolios struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"portfolios"`
+			Shared struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"shared"`
+			Videos struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"videos"`
+			WatchedVideos struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"watched_videos"`
+			Watchlater struct {
+				Options []string `json:"options"`
+				Total   int      `json:"total"`
+				URI     string   `json:"uri"`
+			} `json:"watchlater"`
+		} `json:"connections"`
+	} `json:"metadata"`
 	Name        string      `json:"name"`
-	Link        string      `json:"link"`
-	Location    string      `json:"location"`
-	Bio         string      `json:"bio"`
-	CreatedTime string      `json:"created_time"`
-	Account     string      `json:"account"`
-	Pictures    string      `json:"pictures"`
-	Websites    []string    `json:"websites"`
-	Preferences Preferences `json:"preferences"`
-}
-
-// Preferences
-type Preferences struct {
-	Videos Privacy `json:"videos"`
-}
-
-// Privacy
-type Privacy struct {
-	Privacy string `json:"privacy"`
-}
-
-// View one user
-func (c *MeClient) ShowInfomation() (*User, error) {
-	user := User{}
-	err := query("GET", "/me", nil, &user)
-	return &user, err
-}
-
-// Filter to apply to the results
-const (
-	FilterEmbeddable = "embeddable"
-	FilterPlayable   = "PLAYABLE"
-	FilterAppOnly    = "app_only"
-)
-
-// Technique used to sort the results
-const (
-	SortDate         = "date"
-	SortAlphabetical = "alphabetical"
-	SortPlays        = "plays"
-	SortLikes        = "likes"
-	SortComments     = "comments"
-	SortDuration     = "duration"
-	SortDefault      = "default"
-	SortModifiedTime = "modifed_time"
-)
-
-// The direction that the results are sorted
-const (
-	DirectionAscending  = "asc"
-	DirectionDescending = "desc"
-)
-
-// List Options
-type ListOptions struct {
-	Page             int
-	PerPage          int
-	Query            string
-	Filter           string
-	FilterEmbeddable bool
-	FilterPlayable   bool
-	Sort             string
-	Direction        string
-}
-
-// Create url values from list options
-func (o *ListOptions) CreateValues() url.Values {
-	values := url.Values{}
-	values.Add("page", strconv.Itoa(o.Page))
-	values.Add("per_page", strconv.Itoa(o.PerPage))
-	values.Add("query", o.Query)
-	values.Add("filter", o.Filter)
-	values.Add("filter_embeddable", strconv.FormatBool(o.FilterEmbeddable))
-	values.Add("filter_playable", strconv.FormatBool(o.FilterPlayable))
-	values.Add("sort", o.Sort)
-	values.Add("Direction", o.Direction)
-	return values
-}
-
-// Video lists
-type VideoList struct {}
-
-// list own videos
-// ListOptions is not required
-func (c *MeClient) ListVideos(option *ListOptions) (*VideoList, error){
-	var values url.Values
-	if option != nil {
-		values = option.CreateValues()
-	}
-
-	videos := VideoList{}
-	err := query("GET", "/me/videos", values, &videos)
-	return &videos, err
+	Pictures    interface{} `json:"pictures"`
+	Preferences struct {
+		Videos struct {
+			Privacy string `json:"privacy"`
+		} `json:"videos"`
+	} `json:"preferences"`
+	ResourceKey string        `json:"resource_key"`
+	URI         string        `json:"uri"`
+	Websites    []interface{} `json:"websites"`
 }

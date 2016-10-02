@@ -14,11 +14,6 @@ import (
 var _token string
 var _url = "https://api.vimeo.com"
 
-// Available APIs
-var (
-	Me = new(MeClient)
-)
-
 // Set access token
 func SetToken(token string) {
 	_token = token
