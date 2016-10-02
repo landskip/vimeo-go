@@ -15,5 +15,22 @@ Golang library for [vimeo][0] APIs.
 
 Run `go test` command.
 
+## Usages
+
+### Get own videos
+
+```
+vimeo.SetTokenFromEnv()
+cli := vimeo.VideoClient{}
+
+options := vimeo.ListOptions{
+    Page: 2,
+    Sort: vimeo.SortComments,
+}
+videos, err := cli.ListMyVideos(options)
+
+fmt.Println("length: " + videos.Total)
+```
+
 [0]: https://developer.vimeo.com/
 [1]: https://developer.vimeo.com/apps/new
