@@ -55,16 +55,33 @@ const (
 	DirectionDescending = "desc"
 )
 
-// Create url values from list options
-func (o *ListOptions) createValues() url.Values {
+func (o *ListOptions) GetJSONBytes() ([]byte, error) {
+	return nil, nil
+}
+
+func (o *ListOptions) GetValues() url.Values {
 	values := url.Values{}
 	values.Add("page", strconv.Itoa(o.Page))
-	values.Add("per_page", strconv.Itoa(o.PerPage))
-	values.Add("query", o.Query)
-	values.Add("filter", o.Filter)
-	values.Add("filter_embeddable", strconv.FormatBool(o.FilterEmbeddable))
-	values.Add("filter_playable", strconv.FormatBool(o.FilterPlayable))
-	values.Add("sort", o.Sort)
-	values.Add("Direction", o.Direction)
+	if p := o.PerPage; p != 0 {
+		values.Add("per_page", strconv.Itoa(p))
+	}
+	if q := o.Query; q != "" {
+		values.Add("query", q)
+	}
+	if f := o.Filter; f != "" {
+		values.Add("filter", f)
+	}
+	if f := o.FilterEmbeddable; f != false {
+		values.Add("filter_embeddable", strconv.FormatBool(f))
+	}
+	if f := o.FilterPlayable; f != false {
+		values.Add("filter_playable", strconv.FormatBool(f))
+	}
+	if s := o.Sort; s != "" {
+		values.Add("sort", s)
+	}
+	if d := o.Direction; d != "" {
+		values.Add("Direction", d)
+	}
 	return values
 }
