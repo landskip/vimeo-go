@@ -1,6 +1,7 @@
 package vimeo
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 )
 
 var _token string
@@ -28,12 +28,22 @@ func SetTokenFromEnv() error {
 	return nil
 }
 
-// Query for Vimeo APIs (supported GET, POST, PATCH, DELET)
-// return ResponseCode, error
-func query(method, path string, values url.Values, v interface{}) error {
+// Request for query method
+type QueryRequest interface {
+	GetValues() url.Values         // for GET & DELETE
+	GetJSONBytes() ([]byte, error) // for POST & PATCH & PUT
+}
+
+// Query for Vimeo APIs (supported GET, POST, PATCH, DELETE, PUT)
+// return response code & error
+func query(method, path string, data QueryRequest, result interface{}) error {
 	var body io.Reader
-	if method == "POST" || method == "PATCH" || method == "PUT" {
-		body = strings.NewReader(values.Encode())
+	if data != nil && (method == http.MethodPost || method == http.MethodPatch || method == http.MethodPut) {
+		if j, err := data.GetJSONBytes(); err != nil {
+			return err
+		} else if j != nil {
+			body = bytes.NewBuffer(j)
+		}
 	}
 
 	req, err := http.NewRequest(method, _url+path, body)
@@ -42,12 +52,14 @@ func query(method, path string, values url.Values, v interface{}) error {
 	}
 
 	switch method {
-	case "GET", "DELETE":
-		if values != nil {
-			req.URL.RawQuery = values.Encode()
+	case http.MethodGet, http.MethodDelete:
+		if data != nil {
+			if v := data.GetValues(); v != nil {
+				req.URL.RawQuery = v.Encode()
+			}
 		}
-	case "PATCH", "POST", "PUT":
-		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	case http.MethodPost, http.MethodPut, http.MethodPatch:
+		req.Header.Add("Content-Type", "application/json")
 	}
 	req.Header.Add("Authorization", "Bearer "+_token)
 
@@ -58,18 +70,14 @@ func query(method, path string, values url.Values, v interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	code := resp.StatusCode
-	if code != 200 && code != 201 {
+	if code := resp.StatusCode; code != http.StatusOK && code != http.StatusCreated {
 		return errors.New(http.StatusText(code))
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
+	if b, err := ioutil.ReadAll(resp.Body); err != nil {
 		return err
-	}
-
-	if v != nil {
-		return json.Unmarshal(b, v)
+	} else if result != nil {
+		return json.Unmarshal(b, result)
 	}
 	return nil
 }

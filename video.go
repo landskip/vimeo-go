@@ -1,6 +1,7 @@
 package vimeo
 
 import "net/url"
+import "encoding/json"
 
 // Video Type Option
 const (
@@ -11,16 +12,17 @@ const (
 
 // Request of [POST] /videos
 type VideoOptions struct {
-	Type        string
-	RedirectURL string
-	Link        string
+	Type        string `json:"type,omitempty"`
+	RedirectURL string `json:"RedirectURL,omitempty"`
+	Link        string `json:"Link,omitempty"`
 }
 
-func (o *VideoOptions) createValues() url.Values {
-	values := url.Values{}
-	values.Add("type", o.Type)
-	values.Add("redirect_url", o.RedirectURL)
-	return values
+func (o *VideoOptions) GetJSONBytes() ([]byte, error) {
+	return json.Marshal(o)
+}
+
+func (o *VideoOptions) GetValues() url.Values {
+	return nil
 }
 
 // Response of [GET] /me/videos/{video_id}

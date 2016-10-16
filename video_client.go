@@ -1,7 +1,7 @@
 package vimeo
 
 import (
-	"net/url"
+	"net/http"
 	"strconv"
 )
 
@@ -11,30 +11,30 @@ type VideoClient struct{}
 // Create video
 // VideoOptions is not required
 func (c *VideoClient) CreateVideo(option *VideoOptions) (*Video, error) {
-	var values url.Values
+	var data QueryRequest
 	if option != nil {
-		values = option.createValues()
+		data = option
 	}
 	video := Video{}
-	err := query("POST", "/me/videos", values, &video)
+	err := query(http.MethodPost, "/me/videos", data, &video)
 	return &video, err
 }
 
 // Show own video
 func (c *VideoClient) ShowMyVideo(videoID int) (*Video, error) {
 	video := Video{}
-	err := query("GET", "/me/videos/"+strconv.Itoa(videoID), nil, &video)
+	err := query(http.MethodGet, "/me/videos/"+strconv.Itoa(videoID), nil, &video)
 	return &video, err
 }
 
 // list own videos
 // ListOptions is not required
 func (c *VideoClient) ListMyVideos(option *ListOptions) (*VideoList, error) {
-	var values url.Values
+	var data QueryRequest
 	if option != nil {
-		values = option.createValues()
+		data = option
 	}
 	videos := VideoList{}
-	err := query("GET", "/me/videos", values, &videos)
+	err := query(http.MethodGet, "/me/videos", data, &videos)
 	return &videos, err
 }
